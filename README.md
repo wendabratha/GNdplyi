@@ -1,6 +1,5 @@
 # GeoNetwork 3.2.x deployment and configuration guide
 
----
 #### Server setup :
 - Debian jessie 8.7
 - Apache 2.4.10
@@ -10,15 +9,15 @@
 - PostgreSQL 9.4
 - PostGIS 2.1
 
-Before installing new packages it is recommended to update repositories.
+Before installing new packages it is recommended to update repositories.  
 `$ sudo apt-get update`
 
 ---
 ### Apache HTTP configuration
-Install with command
+Install with command  
 `$ sudo apt-get install apache2`
 
-Open in browser http://localhost or http://\*my-domain-name\*. You should see the contents of the __`index.html`__ file (located in _/var/www/html_).
+Open in browser http://localhost or http://my-domain-name. You should see the contents of the __`index.html`__ file (located in _/var/www/html_).
 
 Check apache version
 
@@ -32,8 +31,7 @@ Configuration for a new site will be created from the modified default apache fi
 
 `$ sudo cp -a /etc/apache/site-available/000-default.conf /etc/apache/site-available/geonetwork.conf`
 
-Now edit the file
-
+Now edit the file  
 `$ sudo nano /etc/apache/site-available/geonetwork.conf`
 
 Add two lines inside the section *`<Virtualhost>`*.
@@ -42,11 +40,11 @@ Add two lines inside the section *`<Virtualhost>`*.
     ProxyPassEnable / http://localhost:8080/geonetwork
 
 #### Enabling site
-Enable the geonetwork site on apache server :
-`$ sudo a2ensite geonetwork`
+Enable the geonetwork site on apache server :  
+`$ sudo a2ensite geonetwork`  
 `$ sudo service apache2 reload`
 
-Once finished with the [Database configuration](#database-configuration-H2) chapter the site will become functional.
+Once finished with the [Database configuration](#database-configuration--h2) chapter the site will become functional.
 
 #### OpenJDK install
 >In Debian jessie openJDK 1.7 will be installed by specifying `default-jre` when executing the installation command. The version will be  
@@ -59,10 +57,10 @@ In the _/etc/apt/sources.list_ add the line below (or optionally create a new fi
     deb http://ftp.debian.org/debian jessie-backports main
 <sub>more @ [debianorg][debianorg]</sub>
 
-Update the repository sources list.
+Update the repository sources list.  
 `$ sudo apt-get update`
 
-To install the correct version run :
+To install the correct version run :  
 `$ sudo apt-get -t jessie-backports install openjdk-8-jre`
 
 and check the java version.
@@ -74,7 +72,7 @@ and check the java version.
    
 ### Tomcat 7 installation
 
-Install with :
+Install with :  
 `$ sudo apt-get install tomcat7`
 
 Verify tomcat version :
@@ -98,18 +96,18 @@ Start the tomcat service :
 
 ### Tomcat heap size configuration
 
-Allocating memory resources while tomcat service starts up will allow GeoNetwork to launch correctly. The heap size is set by passing appropriate parameters to *CATALINA_OPTS* variable using a script, defining tomcat's environment.
+Allocating memory resources while tomcat service starts up will allow GeoNetwork to launch correctly. The heap size is set by passing appropriate parameters to *CATALINA_OPTS* variable using a script, defining tomcat's environment.  
 <sub>more @ [geonetwork documentation][gn docs 1]</sub>
 
-Change directory to _/usr/share/tomcat7/bin/_ and create the file __`setenv.sh`__ with the contents below to adjust the variable parameters :
-`$ sudo cat > setenv.sh`
+Change directory to _/usr/share/tomcat7/bin/_ and create the file __`setenv.sh`__ with the contents below to adjust the variable parameters :  
+`$ sudo cat > setenv.sh`  
 `CATALINA_OPTS="$CATALINA_OPTS -Xms256m -Xmx1024m -XX:MaxPermSize=512m"`
-`<Ctrl+D>`
+`<Ctrl+D>`  
 <sub>\> see terrance's [example script][tsnyder] for other details</sub>
 
 The script has to be an executable file.
 
-`$ sudo chmod +x setenv.sh`
+`$ sudo chmod +x setenv.sh`  
 `$ sudo service tomcat7 restart`
 
 ---
@@ -118,7 +116,7 @@ The script has to be an executable file.
 Start deploying GeoNetwork by downloading geonetwork.war :
 
 `$ cd ~`
-`$ wget "geonetwork download link *"`
+`$ wget "geonetwork download link *"`  
 <sub>* https://sourceforge.net/projects/geonetwork/files/GeoNetwork_opensource/v3.2.1/geonetwork.war</sub>
 
 Copy the downloaded file to the __webapps__ folder _/var/lib/tomcat7/webapps_.
@@ -132,10 +130,10 @@ Tomcat will deploy the file in _/var/lib/tomcat7/webapps/geonetwork_. You might 
 ### GeoNetwork configuration
 #### Data directory
 
-Externalizing the data directory is recommended to simplify the application upgrades. 
+Externalising the data directory is recommended to simplify the application upgrades.  
 <sub>see geonetwork [documentation][gn docs 2]</sub>
 
-However, if you are is not required to modify **meta-data schemas** keeping them in the default directory is probably the best choice as they update with each geonetwork version upgrade.
+However, if you are is not required to modify **meta-data schemas** keeping them in the default directory is probably the best choice as they update with each geonetwork version upgrade.  
 <sub>see geonetwork [mailing list][nabble osgeo 2] and [documentation][gn docs 3]</sub>
 
 Externalising is achieved by adding new parameters in the variable *CATALINA_OPTS*.
@@ -148,14 +146,14 @@ The content of `setenv.sh` should now be :
 
     CATALINA_OPTS="$CATALINA_OPTS -Xms256m -Xmx1024m -XX:MaxPermSize=512m -Dgeonetwork.dir=/usr/share/tomcat7/gn_data_dir -Dgeonetwork.schema.dir=/var/lib/tomcat7/webapps/geonetwork/WEB-INF/data/config/schema_plugins"
 
-The folder **gn\_data\_dir ** is the location where geonetwork saves the details about configuration, metadata and resources, search functionalities and optionally spatial data information <sup>**[1]**</sup>.
+The folder **gn_data_dir ** is the location where geonetwork saves the details about configuration, metadata and resources, search functionalities and optionally spatial data information **<sup>[1]</sup>**.
 
-On linux systems users do not have writting permissions for system files and folders, except for the folder */home/&lt;user&gt;*. Granting writing permissions is covered in the database configuration [chapter](#granting-permissions-to-a-directory) as the database will be placed outside the geonetwork default location for the same reason - easier integration in case of application version update.
+On linux systems users do not have writting permissions for system files and folders, except for the folder */home/&lt;user&gt;*. Granting writing permissions is covered in the database configuration [chapter](#granting-directory-permissions) as the database will be placed outside the geonetwork default location for the same reason - easier integration in case of application version update.  
 [1]: http://geonetwork-opensource.org/manuals/trunk/eng/users/maintainer-guide/installing/customizing-data-directory.html#structure-of-the-data-directory
 
 ### Database configuration - H2
 
-H2 is a default GeoNetwork database, instantiated at the first launch. GeoNetwork will probably not start due to restriction of the writing permissions in the folder _/var/lib/tomcat7_.
+H2 is a default GeoNetwork database, instantiated at the first launch. GeoNetwork will probably not start due to restriction of the writing permissions in the folder _/var/lib/tomcat7_.  
 <sub>more info @ [mailling list][nabble osgeo 1] and [geonetwork github][gn github]</sub>
 
 The error can be inspected in __`geonetwork.log`__ file located in _/var/lib/tomcat7/logs/_.
@@ -175,20 +173,20 @@ Accordingly, the database location has to be configured in **`jdbc.properties`**
 
     jdbc.database=~/.geonetwork/geonetwork
 
-<sub>more @ [gis stex][gis stex]</sub>
+<sup>more @ [gis stex][gis stex]</sup>
 
-At this point the geocatalogue should be properly configured and ready for metadata exchange. Try if everything works as planned @ http://localhost or http://\*my-domain-name\*.
+At this point the geocatalogue should be properly configured and ready for metadata exchange. Try if everything works as planned @ http://localhost or http://my-domain-name.
 
 ---
 
-Geonetwork database connection and database node configuration is managed in 2 principal configuration files. Next section describes how to plug to an external DBMS such as PostGreSQL.
+Geonetwork database connection and database node configuration is managed in 2 principal configuration files. Next section describes how to plug an external DBMS such as PostGreSQL.
 
 ### PostGreSQL installation
 
-Install PostGreSQL.
+Install PostGreSQL.  
 
-`$ sudo apt-get update`
-`$ sudo apt-get install postgresql-9.4`
+`$ sudo apt-get update`  
+`$ sudo apt-get install postgresql-9.4`  
 
 If you're getting *"perl: warning: Setting locale failed."* errors while installing packages the postgresql installation on a debian remote server may fail. [These guides][askubuntu] should be taken in consideration.
 
@@ -203,7 +201,7 @@ Return the postgres status to see if the service is running.
     $ sudo service postgres status
     9.4/main (port 5432): online
 
-Folow the [PostgreSQL how to](../divnotes/blob/master/psql_how_to.md) notes to set up a database user and the connection information details.
+Folow the [PostgreSQL how to](../../../divnotes/blob/master/psql_how_to.md) notes to set up a database user and the connection information details.
 
 Now the database node can be configured properly for PostgreSQL. Open the **`srv.xml`** file in _/var/lib/tomcat7/webapps/geonetwork/WEB-INF/config-node_ 
 
@@ -224,9 +222,9 @@ GeoNetwork will from now on use the PostGreSQL DBMS.
 
 ### PostGIS installation
 
-PostGIS spatial component is recommended to assure good database performance at large quantities of metadata in the catalogue.
+PostGIS spatial component is recommended to assure good database performance having large quantities of metadata in the catalogue.
 
-`$ sudo apt-get install postgis`
+`$ sudo apt-get install postgis`  
 <sub> more @ [geo-solutions][geo-solutions]</sub>
 
 ***
